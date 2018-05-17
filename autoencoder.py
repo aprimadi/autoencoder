@@ -1,13 +1,16 @@
 from keras.layers import Input, Dense
 from keras.models import Model
 from keras.datasets import mnist
+from keras import regularizers
 import numpy as np
 import matplotlib.pyplot as plt
 
 encoding_dim = 32
 
 input_img = Input(shape=(784,))
-encoded = Dense(encoding_dim, activation='relu')(input_img)
+encoded = Dense(encoding_dim, activation='relu',
+                activity_regularizer=regularizers.l1(2*10e-8))(input_img)
+# encoded = Dense(encoding_dim, activation='relu')(input_img)
 decoded = Dense(784, activation='sigmoid')(encoded)
 
 # This model maps an input to its reconstruction
@@ -31,7 +34,7 @@ print(x_train.shape)
 print(x_test.shape)
 
 autoencoder.fit(x_train, x_train,
-                epochs=50,
+                epochs=100,
                 batch_size=256,
                 shuffle=True,
                 validation_data=(x_test, x_test))
@@ -56,3 +59,5 @@ for i in range(n):
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 plt.show()
+
+print(encoded_imgs.mean())
